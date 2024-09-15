@@ -21,8 +21,9 @@ Jelly Link is an interactive, grid-based game developed in Unity that showcases 
 4. **Copy Grid from Scene (Optional):** If there is at least one active level in the scene, you can copy the existing grid layout.
 5. **Spawn and Save:** Spawn your modified grid into the scene and save it by selecting a path within the project.
 
-# Example Screenshots
-
+# Example Visuals
+### Gameplay
+https://github.com/user-attachments/assets/add2263f-fe98-4709-96b0-7fd74d31ad99
 ### Editor Display
 ![ezgif-4-3f7fd1c41a](https://github.com/user-attachments/assets/97e4656f-633c-4579-a570-fda3bab1d0ed)
 ### Example Level - 1
