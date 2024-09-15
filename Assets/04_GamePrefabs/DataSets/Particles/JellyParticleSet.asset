@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bffb5b6f7bd427dacdb439831af7f87, type: 3}
+  m_Name: JellyParticleSet
+  m_EditorClassIdentifier: 
+  _baseDataArray:
+  - Type: 0
+    Data: {fileID: 9040544454856444534, guid: 414f868f73d1b2a4387d34736892dfd1, type: 3}
+  - Type: 1
+    Data: {fileID: 9040544454856444534, guid: 8b997807a8f0e7841bde7d7c4973e986, type: 3}
+  - Type: 2
+    Data: {fileID: 9040544454856444534, guid: 90aff0330974b7a46aa495229b8e37de, type: 3}
+  - Type: 3
+    Data: {fileID: 9040544454856444534, guid: 0b917db2b56e7b847818476979037c02, type: 3}
+  - Type: 4
+    Data: {fileID: 9040544454856444534, guid: 75c9b529ac0f7b64faf60c2ff361ee8f, type: 3}
+  - Type: 5
+    Data: {fileID: 9040544454856444534, guid: 6cbc959f46f2d00499180fa70fbe0e76, type: 3}
+  - Type: 6
+    Data: {fileID: 9040544454856444534, guid: ce377c28aba51eb439b46ca135f88fd8, type: 3}
+  - Type: 7
+    Data: {fileID: 9040544454856444534, guid: 5e0862746c35f8c458d4342ec68ca9a4, type: 3}

@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a74e5f6f904a2fb31262a7773875d8, type: 3}
+  m_Name: CubeJellySet
+  m_EditorClassIdentifier: 
+  _jellyMeshes:
+  - Level: 1
+    Mesh: {fileID: 5450608007244119477, guid: c0f348491be0a6c48bdd39ce2375e0df, type: 3}
+  - Level: 2
+    Mesh: {fileID: 5450608007244119477, guid: d833691fb4441bb4e833cdf1ff74b48e, type: 3}
+  - Level: 3
+    Mesh: {fileID: 5450608007244119477, guid: 171d435f062249e4fbe39a72b55b573a, type: 3}
+  - Level: 4
+    Mesh: {fileID: 5450608007244119477, guid: 42e92c9ee8c66ee43837eb4469062caf, type: 3}
+  - Level: 5
+    Mesh: {fileID: 5450608007244119477, guid: 4dc145d6e7aeb624fb03cd9d85eadca1, type: 3}
+  - Level: 6
+    Mesh: {fileID: 5450608007244119477, guid: 50b664761ec14f04fabf20d6081642ee, type: 3}
+  - Level: 7
+    Mesh: {fileID: 5450608007244119477, guid: 7743ca5474240ac43a304b45c09e048b, type: 3}
+  - Level: 0
+    Mesh: {fileID: 0}

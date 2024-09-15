@@ -1,0 +1,31 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77a6b22f02c6439daf42a6fabe8b66ce, type: 3}
+  m_Name: JellySpriteSet
+  m_EditorClassIdentifier: 
+  _baseDataArray:
+  - Type: 0
+    Data: {fileID: 21300000, guid: 30a2bf173314f474ea75f4ddd109ac83, type: 3}
+  - Type: 1
+    Data: {fileID: 21300000, guid: 518e59b232f38a341a63c149c6349769, type: 3}
+  - Type: 2
+    Data: {fileID: 21300000, guid: 3730a81b01221344faf2b5d413e5ff90, type: 3}
+  - Type: 3
+    Data: {fileID: 21300000, guid: 00c28d856d7448f49922da55dcd95c44, type: 3}
+  - Type: 4
+    Data: {fileID: 21300000, guid: 8af470c844996964c85308dd3361eeae, type: 3}
+  - Type: 5
+    Data: {fileID: 21300000, guid: 465c8d6aa4304a24cad6ddbf43a9b39e, type: 3}
+  - Type: 6
+    Data: {fileID: 21300000, guid: f1b478f89b7819d4380d6224e9f222e5, type: 3}
+  - Type: 7
+    Data: {fileID: 21300000, guid: 34b4592f36e1c4a4cb0dc93c31547320, type: 3}

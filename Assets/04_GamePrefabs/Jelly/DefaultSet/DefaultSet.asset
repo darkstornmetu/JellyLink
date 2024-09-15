@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b6a74e5f6f904a2fb31262a7773875d8, type: 3}
+  m_Name: DefaultSet
+  m_EditorClassIdentifier: 
+  _jellyMeshes:
+  - Level: 1
+    Mesh: {fileID: 8021856620066749695, guid: 380360847fc9d35468f6a52026eaf9f3, type: 3}
+  - Level: 2
+    Mesh: {fileID: 8021856620066749695, guid: 3ee09451abbc849439d49ef4d0295b50, type: 3}
+  - Level: 3
+    Mesh: {fileID: 8021856620066749695, guid: 3875999aabddc3c409ee3456d81dc316, type: 3}
+  - Level: 4
+    Mesh: {fileID: 8021856620066749695, guid: 4f3113694c73669428064c41fbb8cb83, type: 3}
+  - Level: 5
+    Mesh: {fileID: 8021856620066749695, guid: cddb3c91e0de2b442946122ba6c0ed7f, type: 3}
+  - Level: 6
+    Mesh: {fileID: 8021856620066749695, guid: ca15361bbdf49fa4cbf0c3a61f56ea2d, type: 3}

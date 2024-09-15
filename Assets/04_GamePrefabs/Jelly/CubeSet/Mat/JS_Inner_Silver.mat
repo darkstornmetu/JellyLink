@@ -1,0 +1,59 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-1845936006478058907
+MonoBehaviour:
+  m_ObjectHideFlags: 11
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d0353a89b1f911e48b9e16bdc9f2e058, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  version: 7
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: JS_Inner_Silver
+  m_Shader: {fileID: -6465566751694194690, guid: edd7abf643fa4bc4e8561d4c280c97cf,
+    type: 3}
+  m_Parent: {fileID: 2100000, guid: 2e78900ca3f74204c91f2fefa82ee2da, type: 2}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - TCP2_MATCAP
+  - TCP2_MOBILE
+  - TCP2_REFLECTIONS_FRESNEL
+  - TCP2_RIM_LIGHTING_LIGHTMASK
+  - TCP2_SHADOW_LIGHT_COLOR
+  - TCP2_SPECULAR
+  - _ALPHAPREMULTIPLY_ON
+  m_InvalidKeywords:
+  - TCP2_UV_NORMALS_FULL
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap:
+    RenderType: Transparent
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Ints: []
+    m_Floats:
+    - _RampSmoothing: 0.15
+    - _RampThreshold: 0.85
+    - _RampType: 0
+    - _SpecularRoughness: 0.238
+    m_Colors:
+    - _BaseColor: {r: 0.3584906, g: 0.32297972, b: 0.33969072, a: 0.72156864}
+    - _HColor: {r: 0.6509434, g: 0.6509434, b: 0.6509434, a: 1}
+    - _MatCapColor: {r: 0.6981132, g: 0.6981132, b: 0.6981132, a: 1}
+  m_BuildTextureStacks: []
