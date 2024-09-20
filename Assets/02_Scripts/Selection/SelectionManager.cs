@@ -5,6 +5,7 @@ public class SelectionManager : MonoBehaviour
 {
     [SerializeField] private LayerMask _selectionLayer;
     [SerializeField] private GameEventBool _onCanSelectChanged;
+    [SerializeField] private GameEvent _onSelectionFailed;
         
     private Ray _ray;
     private Camera _camera;
@@ -14,10 +15,10 @@ public class SelectionManager : MonoBehaviour
 
     private GridManager _gridManager;
         
-    private void Awake()
+    public void Construct(Camera cam, GridManager gridManager)
     {
-        _camera = Camera.main;
-        _gridManager = FindAnyObjectByType<GridManager>();
+        _camera = cam;
+        _gridManager = gridManager;
     }
 
     private void Update()
@@ -28,7 +29,8 @@ public class SelectionManager : MonoBehaviour
 
     private void SelectionProcess(Jelly j)
     {
-        _gridManager.Select(j);
+        if (!_gridManager.Select(j))
+            _onSelectionFailed.Raise();
     }
     
     private bool TryGetJelly(out Jelly jelly)

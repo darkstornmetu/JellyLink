@@ -1,33 +1,37 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using Cinemachine;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using ScriptableObjectEvents;
 using Sirenix.Utilities;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class GridManager : MonoBehaviour
 {
-    [SerializeField] private LevelProperties _levelProperties;
-    [SerializeField] private AnimationProperties _animationProperties;
-    [SerializeField] private LinkProperties _linkProperties;
-    [Space]
     [SerializeField] private GameEventUniTask _onMoveEvent;
-    [Space] 
-    [SerializeField] private CinemachineImpulseSource _impulseSource;
     
     private Grid<BaseGridItem> _gameGrid;
+    
+    private LevelProperties _levelProperties;
+    private AnimationProperties _animationProperties;
+    private LinkFactory _linkFactory;
     private JellyFactory _jellyFactory;
     
-
     private bool _inReaction;
 
-    private void Awake()
+    public void Construct(LevelProperties levelProperties,
+        AnimationProperties animationProperties,
+        LinkFactory linkFactory,
+        JellyFactory jellyFactory)
     {
-        _jellyFactory = FindAnyObjectByType<JellyFactory>();
+        _levelProperties = levelProperties;
+        _animationProperties = animationProperties;
+        _linkFactory = linkFactory;
+        _jellyFactory = jellyFactory;
+    }
+
+    private void Start()
+    {
         InitializeGrid().Forget();
     }
 
@@ -42,9 +46,9 @@ public class GridManager : MonoBehaviour
         return _jellyFactory.GetJellyByLevel(_levelProperties.GetRandomLevel(), parent);
     }
     
-    public void Select(Jelly j)
+    public bool Select(Jelly j)
     {
-        if (_inReaction) return;
+        if (_inReaction) return false;
         
         bool atLeastOneNeighbour = false;
         
@@ -56,14 +60,14 @@ public class GridManager : MonoBehaviour
                     break;
                 }
 
-        if (!atLeastOneNeighbour)
+
+        if (atLeastOneNeighbour)
         {
-            _impulseSource.GenerateImpulse();
-            //MMVibrationManager.Haptic(HapticTypes.Failure);
-            return;
+            _onMoveEvent.Raise(StartReaction(j));
+            return true;
         }
-        
-        _onMoveEvent.Raise(StartReaction(j));
+
+        return false;
     }
     
     private async UniTaskVoid InitializeGrid()
@@ -140,7 +144,7 @@ public class GridManager : MonoBehaviour
         // Mark the initially selected jelly as selected
         selectedJelly.Activate();
         connectedJellies.Add(selectedJelly);
-        _linkProperties
+        _linkFactory
             .SetLinkMat(_jellyFactory.GetJellyMeshByLevel(selectedJelly.Level).GetJellyMat);
         
         while (jellyQueue.Count > 0)
@@ -182,7 +186,7 @@ public class GridManager : MonoBehaviour
             
             selectedJelly.AddToChildList(adjacentJelly);
             
-            var link = _linkProperties.EstablishLink(
+            var link = _linkFactory.EstablishLink(
                 selectedJelly.Transform.position,
                 adjacentJelly.Transform.position,
                 _animationProperties.TimeBetweenSelection);
@@ -311,60 +315,6 @@ public class GridManager : MonoBehaviour
         {
             _gameGrid.RemoveItemFromGrid(coords);
             item.onDestroy -= OnItemDestroyed;
-        }
-    }
-    
-    [Serializable]
-    private struct LevelProperties
-    {
-        [SerializeField] private int _minLevel;
-        [SerializeField] private int _maxLevel;
-        [SerializeField] private AnimationCurve _probabilityCurve;
-
-        public int GetRandomLevel()
-        {
-            return  Mathf.RoundToInt(Mathf.Lerp(_minLevel, _maxLevel, 
-                _probabilityCurve.Evaluate(Random.value)));  
-        }
-    }
-    
-    [Serializable]
-    private struct AnimationProperties
-    {
-        public float TimeBetweenSelection;
-        public float TimeBetweenFoldOutAnim;
-        public float FoldoutTweenDuration;
-        public float TimeBetweenUnstack;
-        public float RearrangeTime;
-    }
-    
-    [Serializable]
-    private struct LinkProperties
-    {
-        [SerializeField] private LinkMesh _linkMeshPrefab;
-
-        private Material _currentLinkMat;
-
-        public void SetLinkMat(Material mat)
-        {
-            _currentLinkMat = mat;
-        }
-
-        public LinkMesh EstablishLink(Vector3 from, Vector3 to, float duration)
-        {
-            from = from.SetY(0);
-            to = to.SetY(0);
-            
-            var link = Instantiate(_linkMeshPrefab, from,
-                Quaternion.LookRotation((to - from).normalized));
-
-            float distanceBetween = Vector3.Distance(from, to);
-
-            link.transform.DOScaleZ(distanceBetween * 10f, duration);
-            
-            link.SetMaterial(_currentLinkMat);
-
-            return link;
         }
     }
     
