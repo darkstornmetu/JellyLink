@@ -17,7 +17,7 @@ public abstract class BaseGridItem : MonoBehaviour, IGridItem
     [SerializeField] private bool _isStaticItem;
     [SerializeField] private bool _isImpervious;
 
-    public Action<Vector2Int> onDestroy;
+    public event Action<Vector2Int> onDestroy;
     public Transform Transform => _tr;
     public Sprite Icon => _icon;
     public Texture2D IconTexture => _icon.texture;
@@ -29,6 +29,11 @@ public abstract class BaseGridItem : MonoBehaviour, IGridItem
     protected void CallMatchEvent()
     {
         _onMatchEvent.Raise(this);
+    }
+
+    protected void CallDestroyEvent(Vector2Int coords)
+    {
+        onDestroy?.Invoke(coords);
     }
 
     public void Move(Vector3 pos, float duration)

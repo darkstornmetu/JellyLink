@@ -20,7 +20,7 @@ public class DestroyableObstacle : BaseGridItem
 
     protected virtual async void Destroy()
     {
-        onDestroy?.Invoke(GridCoords);
+        CallDestroyEvent(GridCoords);
         
         Sequence seq = DOTween.Sequence();
         

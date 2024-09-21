@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class JellyFactory : MonoBehaviour
+public class JellyFactory : MonoBehaviour, IJellyFactory
 {
     [SerializeField] private Jelly _jellyPrefab;
     [SerializeField] private JellyMeshSet _currentMeshSet;

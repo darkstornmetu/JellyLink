@@ -14,15 +14,16 @@ public class GridManager : MonoBehaviour
     
     private LevelProperties _levelProperties;
     private AnimationProperties _animationProperties;
-    private LinkFactory _linkFactory;
-    private JellyFactory _jellyFactory;
+    
+    private ILinkFactory _linkFactory;
+    private IJellyFactory _jellyFactory;
     
     private bool _inReaction;
 
     public void Construct(LevelProperties levelProperties,
         AnimationProperties animationProperties,
-        LinkFactory linkFactory,
-        JellyFactory jellyFactory)
+        ILinkFactory linkFactory,
+        IJellyFactory jellyFactory)
     {
         _levelProperties = levelProperties;
         _animationProperties = animationProperties;
@@ -59,8 +60,7 @@ public class GridManager : MonoBehaviour
                     atLeastOneNeighbour = true;
                     break;
                 }
-
-
+        
         if (atLeastOneNeighbour)
         {
             _onMoveEvent.Raise(StartReaction(j));
@@ -186,13 +186,13 @@ public class GridManager : MonoBehaviour
             
             selectedJelly.AddToChildList(adjacentJelly);
             
-            var link = _linkFactory.EstablishLink(
-                selectedJelly.Transform.position,
-                adjacentJelly.Transform.position,
+            _linkFactory.EstablishLink(
+                selectedJelly,
+                adjacentJelly,
                 _animationProperties.TimeBetweenSelection);
             
             // Mark the adjacent jelly as selected
-            adjacentJelly.Activate(selectedJelly, link, depthLevel,
+            adjacentJelly.Activate(selectedJelly, depthLevel,
                 _animationProperties.TimeBetweenSelection).Forget();
             connectedJellies.Add(adjacentJelly);
             jellyQueue.Enqueue(adjacentJelly);
