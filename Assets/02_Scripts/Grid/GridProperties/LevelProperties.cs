@@ -9,7 +9,16 @@ public class LevelProperties : ScriptableObject
 
     public int GetRandomLevel()
     {
-        return  Mathf.RoundToInt(Mathf.Lerp(_minLevel, _maxLevel, 
+        return Mathf.RoundToInt(Mathf.Lerp(_minLevel, _maxLevel, 
             _probabilityCurve.Evaluate(Random.value)));  
+    }
+
+    public int GetRandomLevel(int minLevel, int maxLevel)
+    {
+        minLevel = Mathf.Max(_minLevel, minLevel);
+        maxLevel = Mathf.Min(_maxLevel, maxLevel);
+        
+        return Mathf.RoundToInt(Mathf.Lerp(minLevel, maxLevel, 
+            _probabilityCurve.Evaluate(Random.value)));
     }
 }

@@ -49,6 +49,7 @@ MonoBehaviour:
   <GridCoords>k__BackingField: {x: 0, y: 0}
   _tr: {fileID: 6834550537636026899}
   _icon: {fileID: 21300000, guid: eaa52a794a759466bae78170fdb0d1ad, type: 3}
+  _onDestroyEvent: {fileID: 11400000, guid: 442c635ff08d5af49b85dc7fc94b5a0a, type: 2}
   _onMatchEvent: {fileID: 11400000, guid: fd985f1392f8dbc40845949211a9e083, type: 2}
   _isStaticItem: 1
   _isImpervious: 1

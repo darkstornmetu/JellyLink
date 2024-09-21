@@ -220,8 +220,10 @@ MonoBehaviour:
   <GridCoords>k__BackingField: {x: 0, y: 0}
   _tr: {fileID: 7559250288267288880}
   _icon: {fileID: 21300000, guid: 89922045f0c754b3c964970b3818270d, type: 3}
+  _onDestroyEvent: {fileID: 11400000, guid: 442c635ff08d5af49b85dc7fc94b5a0a, type: 2}
   _onMatchEvent: {fileID: 11400000, guid: fd985f1392f8dbc40845949211a9e083, type: 2}
   _isStaticItem: 0
+  _isImpervious: 0
   _levelText: {fileID: 1526958088042084200}
 --- !u!65 &2462646606997099100
 BoxCollider:

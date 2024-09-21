@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+﻿using UnityEngine;
 using System.Linq;
 using Unity.Burst;
 using Unity.Collections;
@@ -170,15 +167,16 @@ namespace Twenty.Effects
         }
         
         [BurstCompile]
-        public struct VertexRubberJob : IJobParallelFor
+        private struct VertexRubberJob : IJobParallelFor
         {
             public NativeArray<Vector3> Vertices;
             private NativeArray<RubberData> _rubbers;
             
-            private float _intensity;
+            private readonly float _intensity;
+            private readonly Vector2 _rendererData;
+            
             private Matrix4x4 _localToWorld;
             private Matrix4x4 _worldToLocal;
-            private Vector2 _rendererData;
             
             private const float _STOP_LIMIT = 0.0001f;
             

@@ -1,14 +1,15 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using ScriptableObjectEvents;
-using Sirenix.Utilities;
 using UnityEngine;
 
 public class GridManager : MonoBehaviour
 {
     [SerializeField] private GameEventUniTask _onMoveEvent;
+    [SerializeField] private GameEventVector2Int _onGridItemDestroyed;
     
     private Grid<BaseGridItem> _gameGrid;
     
@@ -35,17 +36,7 @@ public class GridManager : MonoBehaviour
     {
         InitializeGrid().Forget();
     }
-
-    public void SetItemOnGrid(BaseGridItem item, Vector2Int coords)
-    {
-        _gameGrid.SetItem(item, coords);
-        item.onDestroy += OnItemDestroyed;
-    }
-
-    public Jelly GetRandomJelly(Transform parent)
-    {
-        return _jellyFactory.GetJellyByLevel(_levelProperties.GetRandomLevel(), parent);
-    }
+    
     
     public bool Select(Jelly j)
     {
@@ -75,9 +66,6 @@ public class GridManager : MonoBehaviour
         GameLevel level = FindAnyObjectByType<GameLevel>();
 
         _gameGrid = level.LevelGrid;
-
-        level.GetComponentsInChildren<BaseGridItem>().
-            ForEach(b => b.Transform.position += Vector3.forward * 8);
         
         for (int x = 0; x < _gameGrid.Width; x++)
         {
@@ -88,7 +76,6 @@ public class GridManager : MonoBehaviour
                 if (_gameGrid.GetUnavailability(coordinates)) continue;
 
                 var item = _gameGrid.GetItem(coordinates);
-                item.onDestroy += OnItemDestroyed;
                 
                 Vector3 pos = _gameGrid.GetGridPosition(coordinates);
 
@@ -103,6 +90,7 @@ public class GridManager : MonoBehaviour
                 }
                 else
                 {
+                    item.Transform.position += Vector3.forward * 8;
                     item.Move(pos, _animationProperties.RearrangeTime);
                 }
             }
@@ -304,20 +292,33 @@ public class GridManager : MonoBehaviour
     private Jelly InstantiateJelly(Vector2Int coords, int level, Vector3 pos, Transform parent = null)
     {
         var j = _jellyFactory.GetJellyByLevel(level, parent);
-        SetItemOnGrid(j, coords);
+        _gameGrid.SetItem(j, coords);
         j.Transform.position = pos;
         return j;
     }
 
     private void OnItemDestroyed(Vector2Int coords)
     {
-        if (_gameGrid.TryGetItem(coords, out BaseGridItem item))
-        {
+        if (!_gameGrid.TryGetItem(coords, out BaseGridItem item)) return;
+
+        var replacement = item.ReplacementItem;
+        
+        if (replacement!= null) 
+            _gameGrid.SetItem(replacement, coords);
+        else
             _gameGrid.RemoveItemFromGrid(coords);
-            item.onDestroy -= OnItemDestroyed;
-        }
     }
-    
+
+    private void OnEnable()
+    {
+        _onGridItemDestroyed.AddListener(OnItemDestroyed);
+    }
+
+    private void OnDisable()
+    {
+        _onGridItemDestroyed.RemoveListener(OnItemDestroyed);
+    }
+
     private static readonly Vector2Int[] sr_directions = {
         new(-1, 1),
         new(-1, 0),

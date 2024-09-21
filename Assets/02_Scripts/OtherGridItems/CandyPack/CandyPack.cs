@@ -6,20 +6,14 @@ public class CandyPack : DestroyableObstacle
 {
     [Header("Hit Box References")]
     [SerializeField] private GameObject[] _objectsToDisable;
-
+    
     private int _currentIndex;
 
-    private GridManager _gridManager;
     private Jelly _jelly;
-
-    private void Awake()
+    
+    public void SetJellyInsideThisCandy(Jelly j)
     {
-        _gridManager = FindAnyObjectByType<GridManager>();
-    }
-
-    private void Start()
-    {
-        _jelly = _gridManager.GetRandomJelly(_tr);
+        _jelly = j;
         _jelly.CanSelect = false;
     }
         
@@ -32,8 +26,8 @@ public class CandyPack : DestroyableObstacle
 
     protected override void Destroy()
     {
+        ReplacementItem = _jelly;
         base.Destroy();
-        _gridManager.SetItemOnGrid(_jelly, GridCoords);
         _jelly.CanSelect = true;
         _jelly.Transform.SetParent(null);
         _jelly.Transform.DOScale(Vector3.one, 1).From(Vector3.zero).SetEase(Ease.OutElastic);
