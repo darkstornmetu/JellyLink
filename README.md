@@ -5,11 +5,12 @@ Jelly Link is an interactive, grid-based game developed in Unity that showcases 
 ### What can be learned:
 
 * **Custom Editor Window Usage:** Learn how to create editor windows with a variety of features for level design and management.
+* **Custom Dependency Injection (DI) System:** The project implements a custom DI system to manage dependencies between game components, ensuring better modularity, testability, and flexibility in extending the game.
 * **Job System Optimization:** Practical implementation of Unity's Job System to handle mesh deformations for a squishy "jelly" effect, ensuring smooth and efficient performance.
 * **UniTask for Async Operations:** Simple use of UniTask to handle asynchronous operations, such as jelly reactions.
 * **Scriptable Object Events:** Explore the architecture and usage of Scriptable Object events to manage gameplay interactions in a modular way.
 * **Breadth-First Search Algorithm:** Implementation of a breadth-first search algorithm that allows for linked reactions across the grid.
-* **Easily Replaceable Meshes:** Seamless swapping of mesh sets for jellies, enabling flexible design changes.
+
 
 *Note:* To keep the project focused, non-essential gameplay systems have been stripped.
 
