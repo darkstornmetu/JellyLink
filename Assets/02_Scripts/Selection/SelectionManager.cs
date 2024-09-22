@@ -1,6 +1,7 @@
 using ScriptableObjectEvents;
 using UnityEngine;
 
+[Injectable]
 public class SelectionManager : MonoBehaviour
 {
     [SerializeField] private LayerMask _selectionLayer;
@@ -14,8 +15,9 @@ public class SelectionManager : MonoBehaviour
     private bool _canSelect = true;
 
     private GridManager _gridManager;
-        
-    public void Construct(Camera cam, GridManager gridManager)
+    
+    [Inject]
+    private void Construct(Camera cam, GridManager gridManager)
     {
         _camera = cam;
         _gridManager = gridManager;

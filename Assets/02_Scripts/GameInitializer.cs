@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class GameInitializer : MonoBehaviour
 {
@@ -15,7 +17,36 @@ public class GameInitializer : MonoBehaviour
     
     private void Awake()
     {
-        _selectionManager.Construct(_mainCamera, _gridManager);
-        _gridManager.Construct(_levelProperties, _animationProperties, _linkFactory, _jellyFactory);
+        ServiceContainer.Register<IJellyFactory>(_jellyFactory);
+        ServiceContainer.Register<ILinkFactory>(_linkFactory);
+        ServiceContainer.Register(_gridManager);
+        ServiceContainer.Register(_selectionManager);
+        ServiceContainer.Register(_mainCamera);
+        ServiceContainer.Register(_levelProperties);
+        ServiceContainer.Register(_animationProperties);
+        
+        InjectDependenciesInScene();
+    }
+
+    private void InjectDependenciesInScene()
+    {
+        var injectables = InjectableMonoBehaviours();
+        
+        foreach (var injectable in injectables) 
+            ServiceContainer.InjectDependencies(injectable);
+    }
+
+    private IEnumerable<MonoBehaviour> InjectableMonoBehaviours()
+    {
+        var allMonoBehaviours = FindObjectsByType<MonoBehaviour>(FindObjectsSortMode.None);
+        
+        foreach (var monoBehaviour in allMonoBehaviours)
+        {
+            var type = monoBehaviour.GetType();
+            if (Attribute.IsDefined(type, typeof(InjectableAttribute)))
+            {
+                yield return monoBehaviour;
+            }
+        }
     }
 }

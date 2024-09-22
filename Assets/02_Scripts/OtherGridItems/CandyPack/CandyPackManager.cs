@@ -1,12 +1,21 @@
 using UnityEngine;
 
+[Injectable]
 public class CandyPackManager : MonoBehaviour
 {
-    [SerializeField] private GridManager _gridManager;
-    [SerializeField] private JellyFactory _jellyFactory;
-    [SerializeField] private LevelProperties _levelProperties;
+    private GridManager _gridManager;
+    private LevelProperties _levelProperties;
+    private IJellyFactory _jellyFactory;
     
     private CandyPack[] _candies;
+
+    [Inject]
+    private void Construct(GridManager gridManager, LevelProperties levelProperties, IJellyFactory jellyFactory)
+    {
+        _gridManager = gridManager;
+        _levelProperties = levelProperties;
+        _jellyFactory = jellyFactory;
+    }
 
     private void Awake()
     {

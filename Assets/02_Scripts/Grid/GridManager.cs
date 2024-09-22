@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Cysharp.Threading.Tasks;
@@ -6,6 +5,7 @@ using DG.Tweening;
 using ScriptableObjectEvents;
 using UnityEngine;
 
+[Injectable]
 public class GridManager : MonoBehaviour
 {
     [SerializeField] private GameEventUniTask _onMoveEvent;
@@ -20,8 +20,9 @@ public class GridManager : MonoBehaviour
     private IJellyFactory _jellyFactory;
     
     private bool _inReaction;
-
-    public void Construct(LevelProperties levelProperties,
+    
+    [Inject]
+    private void Construct(LevelProperties levelProperties,
         AnimationProperties animationProperties,
         ILinkFactory linkFactory,
         IJellyFactory jellyFactory)
@@ -31,12 +32,11 @@ public class GridManager : MonoBehaviour
         _linkFactory = linkFactory;
         _jellyFactory = jellyFactory;
     }
-
+    
     private void Start()
     {
         InitializeGrid().Forget();
     }
-    
     
     public bool Select(Jelly j)
     {
