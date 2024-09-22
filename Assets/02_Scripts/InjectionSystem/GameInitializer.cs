@@ -17,6 +17,7 @@ public class GameInitializer : MonoBehaviour
     
     private void Awake()
     {
+        ServiceContainer.Register<ICollectableFactory>(_jellyFactory);
         ServiceContainer.Register<IJellyFactory>(_jellyFactory);
         ServiceContainer.Register<ILinkFactory>(_linkFactory);
         ServiceContainer.Register(_gridManager);

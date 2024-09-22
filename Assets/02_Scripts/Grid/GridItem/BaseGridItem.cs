@@ -4,7 +4,7 @@ using Sirenix.OdinInspector;
 using UnityEngine;
 
 [SelectionBase]
-public abstract class BaseGridItem : MonoBehaviour, IGridItem
+public abstract class BaseGridItem : MonoBehaviour, IBaseGridItem
 {
     [field: SerializeField, ReadOnly] 
     public Vector2Int GridCoords { get; set; }
@@ -23,15 +23,16 @@ public abstract class BaseGridItem : MonoBehaviour, IGridItem
     [SerializeField] private bool _isImpervious;
     
     public Transform Transform => _tr;
-    public Texture2D IconTexture => _icon.texture;
+    public IBaseGridItem Replacement => ReplacementItem;
     public bool IsStatic => _isStaticItem;
     public bool IsImpervious => _isImpervious;
+    public Texture2D IconTexture => _icon.texture;
     
     public abstract void Activate();
     
-    public void Move(Vector3 pos, float duration)
+    public Tween Move(Vector3 pos, float duration)
     {
-        _tr.DOMove(pos, duration);
+        return _tr.DOMove(pos, duration);
     }
 
     protected void CallMatchEvent()

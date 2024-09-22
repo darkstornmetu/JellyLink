@@ -2,7 +2,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using UnityEngine;
 
-public class DestroyableObstacle : BaseGridItem
+public class DestroyableObstacle : BaseGridItem, IDestroyable
 {
     [Header("Obstacle References")]
     [SerializeField] private int _hitsToDestroy = 1;
@@ -18,7 +18,7 @@ public class DestroyableObstacle : BaseGridItem
             OnHit();
     }
 
-    protected virtual async void Destroy()
+    public virtual async void Destroy()
     {
         CallDestroyEvent(GridCoords);
         

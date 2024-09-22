@@ -2,5 +2,5 @@ using UnityEngine;
 
 public interface IGridItem
 {
-    Vector2Int GridCoords { get; set; }
+    public Vector2Int GridCoords { get; set; }
 }

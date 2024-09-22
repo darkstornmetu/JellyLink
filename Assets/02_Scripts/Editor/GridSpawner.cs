@@ -417,7 +417,11 @@ public class GridSpawner : EditorWindow
             GUIContent = content;
         }
         
-        public Vector2Int GridCoords { get; set; }
+        public Vector2Int GridCoords
+        {
+            get => Item.GridCoords;
+            set => Item.GridCoords = value;
+        }
     }
 }
 

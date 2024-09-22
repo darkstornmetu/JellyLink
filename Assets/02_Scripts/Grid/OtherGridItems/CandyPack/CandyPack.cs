@@ -24,7 +24,7 @@ public class CandyPack : DestroyableObstacle
         _currentIndex++;
     }
 
-    protected override void Destroy()
+    public override void Destroy()
     {
         ReplacementItem = _jelly;
         base.Destroy();

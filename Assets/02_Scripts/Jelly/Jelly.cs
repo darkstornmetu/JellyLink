@@ -7,22 +7,20 @@ using TMPro;
 using UnityEngine;
 
 [SelectionBase]
-public class Jelly : BaseGridItem, ISelectable, ILinkable
+public class Jelly : CollectableGridItem
 {
     [SerializeField] private TextMeshPro _levelText;
 
-    public bool CanSelect { get; set; } = true;
+    public override bool CanSelect { get; set; } = true;
     
-    public Vector3 Pos => Transform.position;
+    public override Vector3 Pos => Transform.position;
     
-    public event Action onDestroyLink;
+    public override int Level => _level;
+    public override int DepthLevel => _depthLevel;
+    public override int ChildCount => _childJellies.Count;
     
-    public int Level => _level;
-    public int DepthLevel => _depthLevel;
-    public int ChildCount => _childJellies.Count;
-    
-    private Jelly _rootJelly;
-    private readonly List<Jelly> _childJellies = new ();
+    private ICollectableGridItem _rootJelly;
+    private readonly List<ICollectableGridItem> _childJellies = new ();
     
     private JellyMesh _mesh;
     
@@ -46,7 +44,7 @@ public class Jelly : BaseGridItem, ISelectable, ILinkable
         //MMVibrationManager.Haptic(HapticTypes.LightImpact);
     }
 
-    public async UniTask Activate(Jelly rootJelly, int depthLevel, float delay)
+    public override async UniTask Activate(ICollectableGridItem rootJelly, int depthLevel, float delay)
     {
         _rootJelly = rootJelly;
         _depthLevel = depthLevel;
@@ -54,7 +52,7 @@ public class Jelly : BaseGridItem, ISelectable, ILinkable
         Activate();
     }
 
-    public void Destroy()
+    public override void Destroy()
     {
         CallDestroyEvent(GridCoords);
         CallMatchEvent();
@@ -62,43 +60,52 @@ public class Jelly : BaseGridItem, ISelectable, ILinkable
         Destroy(gameObject);
     }
     
-    public void DestroyLink()
-    {
-        onDestroyLink?.Invoke();
-    }
-    
-    public async UniTask GoToRoot(float waitBetween, float tweenDuration)
+    public override async UniTask CollectAll(float waitBetween, float tweenDuration)
     {
         DestroyLink();
         List<UniTask> taskList = new();
         
         var orderedList = 
-            GetAllChildJellies().OrderByDescending(j => j.Transform.position.y);
+            GetAllChildItems().OrderByDescending(j => j.Transform.position.y);
         
-        foreach (var j in orderedList)
+        foreach (var item in orderedList)
         {
-            taskList.Add(j.DoPath(_rootJelly.GetCurrentRootPosition(), tweenDuration).ToUniTask());            
+            taskList.Add(item.GoToRoot(_rootJelly.GetCurrentRootPosition(), 
+                tweenDuration));            
             await UniTask.WaitForSeconds(waitBetween);
         }
 
         await UniTask.WhenAll(taskList);
     }
 
-    private List<Jelly> GetAllChildJellies()
+    public override List<ICollectableGridItem> GetAllChildItems()
     {
-        List<Jelly> jellies = new List<Jelly>() {this};
+        List<ICollectableGridItem> jellies = new() {this};
         
         foreach (var c in _childJellies)
-            jellies.AddRange(c.GetAllChildJellies());
+            jellies.AddRange(c.GetAllChildItems());
         
         return jellies;
     }
     
-    public void AddToChildList(Jelly j)
+    public override void AddToChildList(ICollectableGridItem j)
     {
         _childJellies.Add(j);
     }
+    
+    public override Vector3 GetCurrentRootPosition()
+    {
+        _currentHeightCount++;
+        Vector3 pos = Transform.position;
+        pos.y += _currentHeightCount * s_currentMeshHeight;
+        return pos;
+    }
 
+    public override UniTask GoToRoot(Vector3 pos, float duration)
+    {
+        return DoPath(pos, duration).ToUniTask();
+    }
+    
     private Tween DoPath(Vector3 pos, float duration)
     {
         //MMVibrationManager.Haptic(HapticTypes.LightImpact);
@@ -114,13 +121,5 @@ public class Jelly : BaseGridItem, ISelectable, ILinkable
         seq.Join(_mesh.RotateTween(duration));
 
         return seq;
-    }
-    
-    private Vector3 GetCurrentRootPosition()
-    {
-        _currentHeightCount++;
-        Vector3 pos = Transform.position;
-        pos.y += _currentHeightCount * s_currentMeshHeight;
-        return pos;
     }
 }

@@ -16,4 +16,14 @@ public class JellyFactory : MonoBehaviour, IJellyFactory
     }
 
     public JellyMesh GetJellyMeshByLevel(int level) => _currentMeshSet.GetJellyMeshAssetByLevel(level);
+    
+    public CollectableGridItem CreateCollectableItem(int level, Transform parent = null)
+    {
+        return GetJellyByLevel(level, parent);
+    }
+
+    public Material GetCollectableMaterial(int level)
+    {
+        return GetJellyMeshByLevel(level).GetJellyMat;
+    }
 }

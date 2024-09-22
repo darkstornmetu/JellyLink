@@ -25,27 +25,27 @@ public class SelectionManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0) && _canSelect && TryGetJelly(out Jelly j))
-            SelectionProcess(j);
+        if (Input.GetMouseButtonDown(0) && _canSelect && TryGetSelectable(out ISelectable s))
+            SelectionProcess(s);
     }
 
-    private void SelectionProcess(Jelly j)
+    private void SelectionProcess(ISelectable s)
     {
-        if (!_gridManager.Select(j))
+        if (!_gridManager.Select(s))
             _onSelectionFailed.Raise();
     }
     
-    private bool TryGetJelly(out Jelly jelly)
+    private bool TryGetSelectable(out ISelectable selectable)
     {
-        jelly = null;
+        selectable = null;
         _ray = _camera.ScreenPointToRay(Input.mousePosition);
 
         if (!Physics.Raycast(_ray, out _hit, _camera.farClipPlane, _selectionLayer)) return false;
             
-        if (!_hit.collider.TryGetComponent(out Jelly c)) return false;
+        if (!_hit.collider.TryGetComponent(out ISelectable s)) return false;
         
-        jelly = c;
-        return c.CanSelect;
+        selectable = s;
+        return s.CanSelect;
     }
         
     private void ChangeCanSelect(bool canSelect)

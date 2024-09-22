@@ -17,7 +17,7 @@ public class GridManager : MonoBehaviour
     private AnimationProperties _animationProperties;
     
     private ILinkFactory _linkFactory;
-    private IJellyFactory _jellyFactory;
+    private ICollectableFactory _collectableFactory;
     
     private bool _inReaction;
     
@@ -25,12 +25,12 @@ public class GridManager : MonoBehaviour
     private void Construct(LevelProperties levelProperties,
         AnimationProperties animationProperties,
         ILinkFactory linkFactory,
-        IJellyFactory jellyFactory)
+        ICollectableFactory collectableFactory)
     {
         _levelProperties = levelProperties;
         _animationProperties = animationProperties;
         _linkFactory = linkFactory;
-        _jellyFactory = jellyFactory;
+        _collectableFactory = collectableFactory;
     }
     
     private void Start()
@@ -38,15 +38,17 @@ public class GridManager : MonoBehaviour
         InitializeGrid().Forget();
     }
     
-    public bool Select(Jelly j)
+    public bool Select(ISelectable s)
     {
+        if (s is not CollectableGridItem i) return false;
+        
         if (_inReaction) return false;
         
         bool atLeastOneNeighbour = false;
         
         foreach (var direction in sr_directions)
-            if (_gameGrid.TryGetItem(j.GridCoords + direction, out BaseGridItem neighbour))
-                if (neighbour is Jelly jelly && jelly.Level == j.Level)
+            if (_gameGrid.TryGetItem(i.GridCoords + direction, out BaseGridItem neighbour))
+                if (neighbour is CollectableGridItem collectableGridItem && collectableGridItem.Level == i.Level)
                 {
                     atLeastOneNeighbour = true;
                     break;
@@ -54,7 +56,7 @@ public class GridManager : MonoBehaviour
         
         if (atLeastOneNeighbour)
         {
-            _onMoveEvent.Raise(StartReaction(j));
+            _onMoveEvent.Raise(StartReaction(i));
             return true;
         }
 
@@ -79,14 +81,14 @@ public class GridManager : MonoBehaviour
                 
                 Vector3 pos = _gameGrid.GetGridPosition(coordinates);
 
-                if (item is Jelly)
+                if (item is CollectableGridItem)
                 {
                     Destroy(item.gameObject);
 
-                    Jelly jelly = InstantiateJelly(coordinates, _levelProperties.GetRandomLevel(),
+                    var collectable = InstantiateCollectable(coordinates, _levelProperties.GetRandomLevel(),
                         pos + Vector3.forward * 8,
                         transform);
-                    jelly.Move(pos, _animationProperties.RearrangeTime);
+                    collectable.Move(pos, _animationProperties.RearrangeTime);
                 }
                 else
                 {
@@ -99,115 +101,117 @@ public class GridManager : MonoBehaviour
         }
     }
     
-    private async UniTask StartReaction(Jelly selectedJelly)
+    private async UniTask StartReaction(CollectableGridItem selectedCollectable)
     {
         _inReaction = true;
         
-        var selectedJellies = await SelectAllConnectedJellies(selectedJelly);
+        var selectedJellies = await SelectAllConnectedJellies(selectedCollectable);
 
         await FoldBack(selectedJellies);
         await Unstack(selectedJellies);
 
-        Vector2Int coords = selectedJelly.GridCoords;
+        Vector2Int coords = selectedCollectable.GridCoords;
         
-        Jelly jelly =  InstantiateJelly(coords,selectedJelly.Level + 1, 
+        var collectable =  InstantiateCollectable(coords,selectedCollectable.Level + 1, 
             _gameGrid.GetGridPosition(coords),
             transform);
-        jelly.Transform.DOScale(Vector3.one, 1).From(Vector3.zero).SetEase(Ease.OutElastic);
+        collectable.Transform.DOScale(Vector3.one, 1).From(Vector3.zero).SetEase(Ease.OutElastic);
         
         await RearrangeGridVertically();
         
         _inReaction = false;
     }
 
-    private async UniTask<List<Jelly>> SelectAllConnectedJellies(Jelly selectedJelly)
+    private async UniTask<List<CollectableGridItem>> SelectAllConnectedJellies(CollectableGridItem selectedCollectable)
     {
         // Initialize a queue to perform breadth-first search
-        var jellyQueue = new Queue<Jelly>();
-        var connectedJellies = new List<Jelly>();
-        jellyQueue.Enqueue(selectedJelly);
+        var collectableQueue = new Queue<CollectableGridItem>();
+        var connectedCollectables = new List<CollectableGridItem>();
+        collectableQueue.Enqueue(selectedCollectable);
         
         int currentDepthLevel = 0;
 
-        // Mark the initially selected jelly as selected
-        selectedJelly.Activate();
-        connectedJellies.Add(selectedJelly);
+        // Mark the initially selected collectable as selected
+        selectedCollectable.Activate();
+        connectedCollectables.Add(selectedCollectable);
+       
         _linkFactory
-            .SetLinkMat(_jellyFactory.GetJellyMeshByLevel(selectedJelly.Level).GetJellyMat);
+            .SetLinkMat(_collectableFactory.GetCollectableMaterial(selectedCollectable.Level));
         
-        while (jellyQueue.Count > 0)
+        while (collectableQueue.Count > 0)
         {
-            // Dequeue all jellies from the current level of the wave
-            int currentLevelCount = jellyQueue.Count;
+            // Dequeue all collectables from the current level of the wave
+            int currentLevelCount = collectableQueue.Count;
             currentDepthLevel++;
     
             for (int i = 0; i < currentLevelCount; i++)
             {
-                Jelly currentJelly = jellyQueue.Dequeue();
+                var currentCollectable = collectableQueue.Dequeue();
 
-                // Select all adjacent jellies that meet the selection criteria
-                SelectAdjacentJellies(currentJelly, connectedJellies, jellyQueue, currentDepthLevel);
+                // Select all adjacent collectables that meet the selection criteria
+                SelectAdjacentJellies(currentCollectable, connectedCollectables, collectableQueue, currentDepthLevel);
             }
 
             // Wait for a short duration before proceeding to the next level of the wave
             await UniTask.WaitForSeconds(_animationProperties.TimeBetweenSelection);
         }
 
-        return connectedJellies;
+        return connectedCollectables;
     }
 
-    private void SelectAdjacentJellies(Jelly selectedJelly, List<Jelly> connectedJellies, 
-        Queue<Jelly> jellyQueue, int depthLevel)
+    private void SelectAdjacentJellies(CollectableGridItem selectedCollectable, 
+        List<CollectableGridItem> connectedCollectables, 
+        Queue<CollectableGridItem> collectableQueue, int depthLevel)
     {
-        // Get the coordinates and level of the current jelly
-        Vector2Int jellyCoordinate = selectedJelly.GridCoords;
-        int level = selectedJelly.Level;
+        // Get the coordinates and level of the current collectable
+        Vector2Int coordinate = selectedCollectable.GridCoords;
+        int level = selectedCollectable.Level;
 
         // Iterate over all adjacent cells
         foreach (var direction in sr_directions)
         {
-            Vector2Int adjacentCoordinate = jellyCoordinate + direction;
+            Vector2Int adjacentCoordinate = coordinate + direction;
             
             if (!_gameGrid.TryGetItem(adjacentCoordinate, out BaseGridItem item)) continue;
-            if (item is not Jelly adjacentJelly || adjacentJelly.Level != level) continue;
-            if (connectedJellies.Contains(adjacentJelly)) continue;
+            if (item is not CollectableGridItem adjacentCollectable || adjacentCollectable.Level != level) continue;
+            if (connectedCollectables.Contains(adjacentCollectable)) continue;
             
-            selectedJelly.AddToChildList(adjacentJelly);
+            selectedCollectable.AddToChildList(adjacentCollectable);
             
             _linkFactory.EstablishLink(
-                selectedJelly,
-                adjacentJelly,
+                selectedCollectable,
+                adjacentCollectable,
                 _animationProperties.TimeBetweenSelection);
             
-            // Mark the adjacent jelly as selected
-            adjacentJelly.Activate(selectedJelly, depthLevel,
+            // Mark the adjacent collectable as selected
+            adjacentCollectable.Activate(selectedCollectable, depthLevel,
                 _animationProperties.TimeBetweenSelection).Forget();
-            connectedJellies.Add(adjacentJelly);
-            jellyQueue.Enqueue(adjacentJelly);
+            connectedCollectables.Add(adjacentCollectable);
+            collectableQueue.Enqueue(adjacentCollectable);
         }
     }
 
-    private async UniTask FoldBack(List<Jelly> jellies)
+    private async UniTask FoldBack(List<CollectableGridItem> collectables)
     {
-        int maxDepthLevel = jellies.Max(j => j.DepthLevel);
+        int maxDepthLevel = collectables.Max(j => j.DepthLevel);
         
         while (maxDepthLevel > 0)
         {
-            var currentDepthJellies = 
-                jellies.Where(j => j.DepthLevel == maxDepthLevel)
-                    .OrderByDescending(j => j.ChildCount);
+            var currentDepthCollectibles = 
+                collectables.Where(c => c.DepthLevel == maxDepthLevel)
+                    .OrderByDescending(c => c.ChildCount);
 
             List<UniTask> foldTaskList = new();
 
-            foreach (var j in currentDepthJellies)
+            foreach (var j in currentDepthCollectibles)
             {
-                foldTaskList.Add(j.GoToRoot(_animationProperties.TimeBetweenFoldOutAnim, 
+                foldTaskList.Add(j.CollectAll(_animationProperties.TimeBetweenFoldOutAnim, 
                     _animationProperties.FoldoutTweenDuration));
 
                 foreach (var direction in sr_cardinalDirections)
                 {
                     if (_gameGrid.TryGetItem(j.GridCoords + direction, out BaseGridItem item) && 
-                        item is not Jelly) 
+                        item is not CollectableGridItem) 
                         item.Activate();
                 }
             }
@@ -216,27 +220,27 @@ public class GridManager : MonoBehaviour
             await UniTask.WhenAll(foldTaskList);
         }
 
-        var jelly = jellies.First(j => j.DepthLevel == 0);
+        var collectableGridItem = collectables.First(c => c.DepthLevel == 0);
         
         foreach (var direction in sr_cardinalDirections)
         {
-            if (_gameGrid.TryGetItem(jelly.GridCoords + direction, out BaseGridItem item) && 
-                item is not Jelly) 
+            if (_gameGrid.TryGetItem(collectableGridItem.GridCoords + direction, out BaseGridItem item) && 
+                item is not CollectableGridItem) 
                 item.Activate();
         }
     }
 
-    private async UniTask Unstack(List<Jelly> jellies)
+    private async UniTask Unstack(List<CollectableGridItem> collectibles)
     {
         var sortedStack = 
-            jellies.OrderByDescending(j => j.Transform.position.y);
+            collectibles.OrderByDescending(c => c.Transform.position.y);
         
-        jellies.ForEach(j => j.Transform.SetParent(null, true));
+        collectibles.ForEach(c => c.Transform.SetParent(null, true));
 
-        foreach (var jelly in sortedStack)
+        foreach (var collectible in sortedStack)
         {
             await UniTask.WaitForSeconds(_animationProperties.TimeBetweenUnstack);
-            jelly.Destroy();
+            collectible.Destroy();
         }
     }
 
@@ -278,10 +282,10 @@ public class GridManager : MonoBehaviour
 
                 if (didFindACandidateInGrid) continue;
 
-                Jelly jelly = InstantiateJelly(coordinates, _levelProperties.GetRandomLevel(), 
+                CollectableGridItem collectable = InstantiateCollectable(coordinates, _levelProperties.GetRandomLevel(), 
                     _gameGrid.GetGridPosition(coordinates) + Vector3.forward * 5,
                     transform);
-                jelly.Move(_gameGrid.GetGridPosition(coordinates), _animationProperties.RearrangeTime);
+                collectable.Move(_gameGrid.GetGridPosition(coordinates), _animationProperties.RearrangeTime);
             }
             await UniTask.WaitForSeconds(0.1f);
         }
@@ -289,12 +293,12 @@ public class GridManager : MonoBehaviour
         await UniTask.WaitForSeconds(_animationProperties.RearrangeTime);
     }
     
-    private Jelly InstantiateJelly(Vector2Int coords, int level, Vector3 pos, Transform parent = null)
+    private CollectableGridItem InstantiateCollectable(Vector2Int coords, int level, Vector3 pos, Transform parent = null)
     {
-        var j = _jellyFactory.GetJellyByLevel(level, parent);
-        _gameGrid.SetItem(j, coords);
-        j.Transform.position = pos;
-        return j;
+        var collectable = _collectableFactory.CreateCollectableItem(level, parent);
+        _gameGrid.SetItem(collectable, coords);
+        collectable.Transform.position = pos;
+        return collectable;
     }
 
     private void OnItemDestroyed(Vector2Int coords)
