@@ -1,6 +1,6 @@
 # Jelly Link
 
-Jelly Link is an interactive, grid-based game developed in Unity that showcases custom editor windows, grid management, and the use of Unity's Job System for certain optimizations.
+Jelly Link is an interactive, grid-based game developed in Unity that showcases custom editor windows, custom dependecy injection system, grid management, and the use of Unity's Job System for certain optimizations.
 
 ### What can be learned:
 
